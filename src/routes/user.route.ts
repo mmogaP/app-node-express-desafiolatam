@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { userController } from "../controllers/user.controller";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import { verifyToken } from "../middlewares/authMiddleware";
 
 const router = Router();
 
 // path: http:localhost:3000/api/v1/users
 
 // leer los usuarios
-router.get("/", authMiddleware, userController.getUsers);
+router.get("/", verifyToken, userController.getUsers);
 
 // leer un único usuario por id
 router.get("/:id", userController.getUser);

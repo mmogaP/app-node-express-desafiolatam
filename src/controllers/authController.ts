@@ -1,63 +1,40 @@
-import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import pool from "../db";
-import dotenv from "dotenv";
+import { NextFunction, Request, Response } from "express";
+import { authLoginSchema } from "../schemas/auth.schema";
+import { authService } from "../services/auth.service";
+import { HttpError } from "../utils/httpError.util";
 
-dotenv.config();
-
-export const register = async (req: Request, res: Response): Promise<void> => {
-  const { username, password } = req.body;
-
-  // Validar campos requeridos
-  if (!username || !password) {
-    res.status(400).json({ error: "Username and password are required." });
-    return;
-  }
-
+const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
-      username,
-      hashedPassword,
-    ]);
-    res.status(201).json({ message: "Usuario registrado exitosamente." });
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-};
+    const { error, value } = authLoginSchema.validate(req.body);
 
-export const login = async (req: Request, res: Response): Promise<void> => {
-  const { username, password } = req.body;
-
-  try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
-
-    if (result.rows.length === 0) {
-      res.status(404).json({ error: "Usuario no encontrado." });
-      return;
+    if (error) {
+      throw new HttpError(error.message, 400);
     }
 
-    const user = result.rows[0];
-    const validPassword = await bcrypt.compare(password, user.password);
+    const { email, password } = value;
 
-    if (!validPassword) {
-      res.status(401).json({ error: "Credenciales inválidas." });
-      return;
-    }
-
-    const token = jwt.sign({ email: username }, process.env.JWT_SECRET || "secret", {
-      expiresIn: "1h",
-    });
+    const token = await authService.loginWithEmailAndPassword(email, password);
 
     res.json({ token });
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    }
+    next(error);
   }
+};
+
+const register = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+    const token = await authService.registerWithEmailAndPassword(
+      email,
+      password
+    );
+    res.status(201).json({ token });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const authController = {
+  login,
+  register,
 };

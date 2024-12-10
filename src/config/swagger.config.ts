@@ -7,7 +7,7 @@ const swaggerOptions: swaggerJSDoc.Options = {
     info: {
       title: "API REST con Node.js y Express",
       version: "1.0.0",
-      description: "API Document",
+      description: "Social network API",
     },
     servers: [
       {

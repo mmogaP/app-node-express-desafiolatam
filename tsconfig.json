@@ -4,12 +4,10 @@
     "strict": true,
     "outDir": "./dist",
     "moduleDetection": "force",
-    "module": "CommonJS",
+    "module": "Preserve",
     "resolveJsonModule": true,
     "allowJs": true,
     "esModuleInterop": true,
     "isolatedModules": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  }
 }

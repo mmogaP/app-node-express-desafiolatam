@@ -1,5 +1,10 @@
+openapi: "3.0.0"
+info:
+  title: "API Example"
+  version: "1.0.0"
+
 paths:
-  /login:
+  /auth/login:
     post:
       tags:
         - "auth"
@@ -9,25 +14,220 @@ paths:
         content:
           application/json:
             schema:
-              type: "object"
-              properties:
-                username:
-                  type: "string"
-                  format: "username"
-                password:
-                  type: "string"
-                  format: "password"
+              $ref: "#/components/schemas/AuthBody"
       responses:
         200:
           description: "OK"
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  token:
-                    type: "string"
+                $ref: "#/components/schemas/AuthResponse"
         400:
           description: "Bad Request"
         500:
           description: "Internal Server Error"
+
+  /auth/register:
+    post:
+      tags:
+        - "auth"
+      summary: "Register"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthBody"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: "Bad Request"
+        500:
+          description: "Internal Server Error"
+
+  /users:
+    get:
+      tags:
+        - "users"
+      summary: "Get all users"
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersResponse"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    post:
+      tags:
+        - "users"
+      summary: "Create a user"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthBody"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad Request"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+
+  /users/{id}:
+    get:
+      tags:
+        - "users"
+      summary: "Get a user"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+            example: "9184960d-fe58-49c5-a714-6edb32672d14"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+    put:
+      tags:
+        - "users"
+      summary: "Update a user"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+            example: "9184960d-fe58-49c5-a714-6edb32672d14"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthBody"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad Request"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+    delete:
+      tags:
+        - "users"
+      summary: "Delete a user"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+            example: "9184960d-fe58-49c5-a714-6edb32672d14"
+      responses:
+        204:
+          description: "No Content"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+
+  schemas:
+    AuthResponse:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+          example: "eyJhbGciOi..."
+
+    AuthBody:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+          format: "email"
+          example: "test1@domain.com"
+        password:
+          type: "string"
+          example: "123123"
+
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          example: "9184960d-fe58-49c5-a714-6edb32672d14"
+        email:
+          type: "string"
+          format: "email"
+          example: "test2@domain.com"
+        password:
+          type: "string"
+          example: "$2a$10$2wS6XBG6wej2diNGPZPaD.J63zU3K16hTkh7Zpy3xpK.o.2c6MKUW"
+
+    UsersResponse:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+          format: "email"
+          example: "test1@domain.com"
+        users:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/User"

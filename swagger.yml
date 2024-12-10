@@ -11,7 +11,7 @@ paths:
             schema:
               type: "object"
               properties:
-                email:
+                username:
                   type: "string"
                   format: "username"
                 password:

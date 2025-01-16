@@ -1,14 +1,16 @@
-import pg from "pg";
-import dotenv from "dotenv";
+/* import pg from "pg"; */
+import "dotenv/config";
+import { Sequelize } from "sequelize-typescript";
+import { User } from "../models/user.model";
 
-dotenv.config();
+const DATABASE_URL = process.env.DATABASE_URL;
 
-const { Pool } = pg;
-const connectionString = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL not found");
+}
 
-const pool = new Pool({
-  connectionString,
-  allowExitOnIdle: true
+export const db = new Sequelize(DATABASE_URL, {
+  dialect: "postgres",
+  models: [User],
+  logging: true,
 });
-
-export default pool;

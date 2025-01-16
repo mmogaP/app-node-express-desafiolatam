@@ -1,64 +1,73 @@
 import { Request, Response } from "express";
-import { userService } from "../services/user.service";
+import { User } from "../models/user.model";
+import { UserAttributes } from "../interfaces/user.interface";
+import { userCreateSchema, userUpdateParamsSchema, userUpdateSchema,  } from "../schemas/auth.schema";
 
-const getUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   try {
-    const users = await userService.getAllUsers();
-    res.json({
-      req: req.email,
-      users,
-    });
+    const users = await User.findAll();
+    res.json(users);
   } catch (error) {
-    console.log(error);
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else res.status(500).json({ error: "Error de servidor" });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-const getUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
-    const user = await userService.getUserById(id);
+    const { error, value } = userCreateSchema.validate(req.body);
+
+    if (error) {
+      res.status(400).json(error);
+      return;
+    }
+
+    const { username, password, email } = value as UserAttributes;
+
+    const user = await User.create({ username, password, email });
     res.json(user);
   } catch (error) {
-    console.log(error);
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else res.status(500).json({ error: "Error de servidor" });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-const deleteUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
-    const user = await userService.deleteUserById(id);
+    const { error: paramsError, value: paramsValue } =
+      userUpdateParamsSchema.validate(req.params);
+
+    if (paramsError) {
+      res.status(400).json(paramsError);
+      return;
+    }
+
+    const { uid } = paramsValue as { uid: number };
+
+    const { error, value } = userUpdateSchema.validate(req.body);
+
+    if (error) {
+      res.status(400).json(error);
+      return;
+    }
+
+    const { username, password, email } = value as UserAttributes;
+
+    const user = await User.findByPk(uid);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    user.username = username || user.username;
+    user.password = password || user.password;
+    user.email = email || user.email;
+
+    await user.save();
     res.json(user);
   } catch (error) {
-    console.log(error);
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else res.status(500).json({ error: "Error de servidor" });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
-};
-
-const updateUser = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { email, password } = req.body;
-    const user = await userService.updateUserById(id, email, password);
-    res.json(user);
-  } catch (error) {
-    console.log(error);
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else res.status(500).json({ error: "Error de servidor" });
-  }
-};
-
-export const userController = {
-  getUsers,
-  getUser,
-  deleteUser,
-  updateUser,
 };

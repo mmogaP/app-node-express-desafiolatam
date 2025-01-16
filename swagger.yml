@@ -1,233 +1,126 @@
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
-  title: "API Example"
-  version: "1.0.0"
-
+  title: User API
+  description: API para la gestión de usuarios.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Servidor local
 paths:
-  /auth/login:
-    post:
-      tags:
-        - "auth"
-      summary: "Login"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthBody"
-      responses:
-        200:
-          description: "OK"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        400:
-          description: "Bad Request"
-        500:
-          description: "Internal Server Error"
-
-  /auth/register:
-    post:
-      tags:
-        - "auth"
-      summary: "Register"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthBody"
-      responses:
-        201:
-          description: "Created"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        400:
-          description: "Bad Request"
-        500:
-          description: "Internal Server Error"
-
   /users:
     get:
-      tags:
-        - "users"
-      summary: "Get all users"
-      security:
-        - bearerAuth: []
+      summary: Obtener todos los usuarios
+      description: Retorna una lista de todos los usuarios registrados.
       responses:
         200:
-          description: "OK"
+          description: Lista de usuarios obtenida correctamente.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersResponse"
-        401:
-          description: "Unauthorized"
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
         500:
-          description: "Internal Server Error"
+          description: Error interno del servidor.
     post:
-      tags:
-        - "users"
-      summary: "Create a user"
-      security:
-        - bearerAuth: []
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario con los datos proporcionados.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AuthBody"
+              $ref: "#/components/schemas/UserCreate"
       responses:
-        201:
-          description: "Created"
+        200:
+          description: Usuario creado correctamente.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
         400:
-          description: "Bad Request"
-        401:
-          description: "Unauthorized"
+          description: Error de validación en los datos proporcionados.
         500:
-          description: "Internal Server Error"
-
-  /users/{id}:
-    get:
-      tags:
-        - "users"
-      summary: "Get a user"
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-            format: "uuid"
-            example: "9184960d-fe58-49c5-a714-6edb32672d14"
-      responses:
-        200:
-          description: "OK"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        401:
-          description: "Unauthorized"
-        404:
-          description: "Not Found"
-        500:
-          description: "Internal Server Error"
+          description: Error interno del servidor.
+  /users/{uid}:
     put:
-      tags:
-        - "users"
-      summary: "Update a user"
-      security:
-        - bearerAuth: []
+      summary: Actualizar un usuario existente
+      description: Actualiza los datos de un usuario por su `uid`.
       parameters:
-        - name: "id"
-          in: "path"
+        - name: uid
+          in: path
           required: true
+          description: UUID del usuario a actualizar.
           schema:
-            type: "string"
-            format: "uuid"
-            example: "9184960d-fe58-49c5-a714-6edb32672d14"
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AuthBody"
+              $ref: "#/components/schemas/UserUpdate"
       responses:
         200:
-          description: "OK"
+          description: Usuario actualizado correctamente.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
         400:
-          description: "Bad Request"
-        401:
-          description: "Unauthorized"
+          description: Error de validación en los datos proporcionados o en el `uid`.
         404:
-          description: "Not Found"
+          description: Usuario no encontrado.
         500:
-          description: "Internal Server Error"
-    delete:
-      tags:
-        - "users"
-      summary: "Delete a user"
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-            format: "uuid"
-            example: "9184960d-fe58-49c5-a714-6edb32672d14"
-      responses:
-        204:
-          description: "No Content"
-        401:
-          description: "Unauthorized"
-        404:
-          description: "Not Found"
+          description: Error interno del servidor.
 
 components:
-  securitySchemes:
-    bearerAuth:
-      type: "http"
-      scheme: "bearer"
-      bearerFormat: "JWT"
-
   schemas:
-    AuthResponse:
-      type: "object"
-      properties:
-        token:
-          type: "string"
-          example: "eyJhbGciOi..."
-
-    AuthBody:
-      type: "object"
-      properties:
-        email:
-          type: "string"
-          format: "email"
-          example: "test1@domain.com"
-        password:
-          type: "string"
-          example: "123123"
-
     User:
-      type: "object"
+      type: object
       properties:
-        id:
-          type: "string"
-          format: "uuid"
-          example: "9184960d-fe58-49c5-a714-6edb32672d14"
+        uid:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        username:
+          type: string
+          example: "mauriciomoraga"
         email:
-          type: "string"
-          format: "email"
-          example: "test2@domain.com"
+          type: string
+          format: email
+          example: "example@mail.com"
         password:
-          type: "string"
-          example: "$2a$10$2wS6XBG6wej2diNGPZPaD.J63zU3K16hTkh7Zpy3xpK.o.2c6MKUW"
-
-    UsersResponse:
-      type: "object"
+          type: string
+          example: "hashedpassword123"
+    UserCreate:
+      type: object
+      required:
+        - email
+        - password
       properties:
+        username:
+          type: string
+          example: "mauriciomoraga"
         email:
-          type: "string"
-          format: "email"
-          example: "test1@domain.com"
-        users:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/User"
+          type: string
+          format: email
+          example: "example@mail.com"
+        password:
+          type: string
+          minLength: 6
+          example: "securepassword"
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "updatedusername"
+        email:
+          type: string
+          format: email
+          example: "updatedemail@mail.com"
+        password:
+          type: string
+          minLength: 6
+          example: "newsecurepassword"

@@ -11,7 +11,7 @@ const swaggerOptions: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: "http://localhost:3000/", // URL base de la API
+        url: "http://localhost:3000/api/v1", // URL base de la API
       },
     ],
   },

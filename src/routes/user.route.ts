@@ -1,21 +1,14 @@
 import { Router } from "express";
-import { userController } from "../controllers/user.controller";
-import { verifyToken } from "../middlewares/authMiddleware";
+import {
+  getAllUsers,
+  createUser,
+  updateUser,
+} from "../controllers/user.controller";
 
-const router = Router();
+const userRouter = Router();
 
-// path: http:localhost:3000/api/v1/users
+userRouter.get("/", getAllUsers);
+userRouter.post("/", createUser);
+userRouter.put("/:uid", updateUser);
 
-// leer los usuarios
-router.get("/", verifyToken, userController.getUsers);
-
-// leer un único usuario por id
-router.get("/:id", userController.getUser);
-
-// eliminar un usuario por id
-router.delete("/:id", userController.deleteUser);
-
-// actualizar un usuario por id
-router.put("/:id", userController.updateUser);
-
-export default router;
+export { userRouter };

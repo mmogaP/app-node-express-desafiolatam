@@ -1,43 +1,48 @@
-import pool  from "../db/index";
-import { User } from "../interfaces/user.interface";
+import bcript from "bcryptjs";
+import { UserAttributes } from "../interfaces/user.interface";
 
-const findAll = async () => {
-  const { rows } = await pool.query("SELECT * FROM USERS");
-  return rows as User[];
-};
+import {
+  AllowNull,
+  BeforeCreate,
+  BeforeUpdate,
+  Column,
+  DataType,
+  Default,
+  IsEmail,
+  IsUUID,
+  Model,
+  PrimaryKey,
+  Table,
+  Unique,
+} from "sequelize-typescript";
 
-const findOneByEmail = async (email: string) => {
-  // Datos parametrizados
-  const query = {
-    text: `
-    SELECT * FROM USERS
-    WHERE email = $1
-    `,
-    values: [email],
-  };
 
-  const { rows } = await pool.query(query);
+@Table({
+  tableName: "Users",
+})
+export class User extends Model<UserAttributes> {
+  @IsUUID(4)
+  @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  uid!: string;
 
-  return rows[0] as User; // ORM
-};
+  @Column(DataType.STRING)
+  username!: string;
 
-const create = async (email: string, password: string) => {
-  const query = {
-    text: `
-    INSERT INTO USERS (email, password)
-    VALUES ($1, $2)
-    RETURNING *
-    `,
-    values: [email, password],
-  };
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  password!: string;
 
-  const { rows } = await pool.query(query);
+  @AllowNull(false)
+  @IsEmail
+  @Unique
+  @Column(DataType.STRING)
+  email!: string;
 
-  return rows[0] as User;
-};
-
-export const UserModel = {
-  create,
-  findOneByEmail,
-  findAll,
-};
+  @BeforeUpdate
+  @BeforeCreate
+  static async hashPassword(user: User) {
+    user.password = await bcript.hash(user.password, 10);
+  }
+}

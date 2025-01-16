@@ -1,2 +1,18 @@
 2024-12-10T18:03:27.002Z [INFO]: /users GET
 2024-12-10T18:11:57.058Z [INFO]: /users GET
+2025-01-16T17:35:28.384Z [INFO]: /api-docs GET
+2025-01-16T17:35:39.121Z [INFO]: /reference GET
+2025-01-16T17:36:26.060Z [INFO]: /auth/login POST
+2025-01-16T17:36:26.087Z [ERROR]: /auth/login POST column "email" does not exist
+2025-01-16T17:36:28.212Z [INFO]: /auth/login POST
+2025-01-16T17:36:28.236Z [ERROR]: /auth/login POST column "email" does not exist
+2025-01-16T17:36:48.928Z [INFO]: /auth/register POST
+2025-01-16T17:36:48.951Z [ERROR]: /auth/register POST column "email" does not exist
+2025-01-16T17:36:52.667Z [INFO]: /auth/register POST
+2025-01-16T17:36:52.688Z [ERROR]: /auth/register POST column "email" does not exist
+2025-01-16T17:37:12.716Z [INFO]: /auth/register POST
+2025-01-16T17:37:12.737Z [ERROR]: /auth/register POST column "email" does not exist
+2025-01-16T17:37:42.717Z [INFO]: /auth/register POST
+2025-01-16T17:37:42.736Z [ERROR]: /auth/register POST column "email" does not exist
+2025-01-16T17:37:46.188Z [INFO]: /auth/register POST
+2025-01-16T17:37:46.247Z [ERROR]: /auth/register POST column "email" does not exist

@@ -77,11 +77,10 @@ La documentación interactiva de la API está disponible en:
 ### **Usuarios**
 
 | Método | Endpoint                | Descripción                 |
-| ------ | ----------------------- | --------------------------- | -------------------------------- | --- |
+| ------ | ----------------------- | --------------------------- |
 | GET    | `/api/v1/users`         | Obtener todos los usuarios. |
 | POST   | `/api/v1/auth/register` | Crear un nuevo usuario.     |
 | POST   | `/api/v1/auth/login`    | Logear a un usuario.        |
-| <!--   | PUT                     | `/api/v1/users/{uid}`       | Actualizar un usuario existente. | --> |
 
 ---
 

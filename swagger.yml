@@ -7,21 +7,7 @@ servers:
   - url: http://localhost:3000
     description: Servidor local
 paths:
-  /users:
-    get:
-      summary: Obtener todos los usuarios
-      description: Retorna una lista de todos los usuarios registrados.
-      responses:
-        200:
-          description: Lista de usuarios obtenida correctamente.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
-        500:
-          description: Error interno del servidor.
+  /auth/register:
     post:
       summary: Crear un nuevo usuario
       description: Crea un nuevo usuario con los datos proporcionados.
@@ -42,39 +28,52 @@ paths:
           description: Error de validación en los datos proporcionados.
         500:
           description: Error interno del servidor.
-  /users/{uid}:
-    put:
-      summary: Actualizar un usuario existente
-      description: Actualiza los datos de un usuario por su `uid`.
-      parameters:
-        - name: uid
-          in: path
-          required: true
-          description: UUID del usuario a actualizar.
-          schema:
-            type: string
-            format: uuid
+  /auth/login:
+    post:
+      summary: Logear a un usuario
+      description: Logea a un usuario con los datos proporcionados.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserUpdate"
+              $ref: "#/components/schemas/UserLogin"
       responses:
         200:
-          description: Usuario actualizado correctamente.
+          description: Usuario logeado correctamente.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
         400:
-          description: Error de validación en los datos proporcionados o en el `uid`.
-        404:
-          description: Usuario no encontrado.
+          description: Error de validación en los datos proporcionados.
+        401:
+          description: Credenciales inválidas.
         500:
           description: Error interno del servidor.
-
+  /users:
+    get:
+      summary: Obtener todos los usuarios
+      description: Retorna una lista de todos los usuarios registrados.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de usuarios obtenida correctamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        500:
+          description: Error interno del servidor.
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     User:
       type: object
@@ -110,17 +109,30 @@ components:
           type: string
           minLength: 6
           example: "securepassword"
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "example@mail.com"
+        password:
+          type: string
+          example: "securepassword"
     UserUpdate:
       type: object
       properties:
         username:
           type: string
-          example: "updatedusername"
+          example: "mauriciomoraga"
         email:
           type: string
           format: email
-          example: "updatedemail@mail.com"
+          example: "example@mail.com"
         password:
           type: string
           minLength: 6
-          example: "newsecurepassword"
+          example: "securepassword"

@@ -1,14 +1,9 @@
 import { Router } from "express";
-import {
-  getAllUsers,
-  createUser,
-  updateUser,
-} from "../controllers/user.controller";
+import { getAllUsers } from "../controllers/user.controller";
+import { verfiyToken, verifyAdminRole } from "../middleware/jwt.middleware";
 
 const userRouter = Router();
 
-userRouter.get("/", getAllUsers);
-userRouter.post("/", createUser);
-userRouter.put("/:uid", updateUser);
+userRouter.get("/", verfiyToken, getAllUsers);
 
 export { userRouter };

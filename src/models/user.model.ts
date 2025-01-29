@@ -16,33 +16,49 @@ import {
   Unique,
 } from "sequelize-typescript";
 
+export enum RoleEnum {
+  USER = "user",
+  ADMIN = "admin",
+}
 
 @Table({
-  tableName: "Users",
+  tableName: "users",
 })
 export class User extends Model<UserAttributes> {
   @IsUUID(4)
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  uid!: string;
+  declare uid: string;
 
   @Column(DataType.STRING)
-  username!: string;
+  declare username: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  password!: string;
+  declare password: string;
 
   @AllowNull(false)
   @IsEmail
   @Unique
   @Column(DataType.STRING)
-  email!: string;
+  declare email: string;
+
+  @AllowNull(false)
+  @Default(RoleEnum.USER)
+  @Column(DataType.ENUM(...Object.values(RoleEnum)))
+  declare role: RoleEnum;
 
   @BeforeUpdate
   @BeforeCreate
   static async hashPassword(user: User) {
+    if (!user.changed("password")) {
+      return;
+    }
     user.password = await bcript.hash(user.password, 10);
+  }
+
+  async validatePassword(password: string) {
+    return await bcript.compare(password, this.password);
   }
 }

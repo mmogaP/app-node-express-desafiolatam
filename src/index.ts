@@ -1,13 +1,21 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import { db } from "./db/index";
-import { userRouter } from "./routes/user.route";
+import { authRouter } from "./routes/auth.route";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./config/swagger.config";
+import { userRouter } from "./routes/user.route";
 
 const app = express();
 
 // Middleware para JSON
 app.use(express.json());
+
+// Middleware para cookies
+app.use(cookieParser());
+
+// Rutas de autenticación
+app.use("/api/v1/auth", authRouter);
 
 // Rutas de usuarios
 app.use("/api/v1/users", userRouter);

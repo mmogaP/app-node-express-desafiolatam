@@ -82,6 +82,12 @@ La documentación interactiva de la API está disponible en:
 | POST   | `/api/v1/auth/register` | Crear un nuevo usuario.     |
 | POST   | `/api/v1/auth/login`    | Logear a un usuario.        |
 
+### **Swagger**
+
+La documentación interactiva de la API está disponible en:
+
+`http://localhost:3000/api-docs`
+
 ---
 
 ## **Estructura del proyecto**
@@ -113,24 +119,8 @@ src/
 - **Swagger**: Documentación interactiva.
 - **Joi**: Validación de datos.
 - **bcryptjs**: Hashing de contraseñas.
-
----
-
-## **Contribuciones**
-
-Si deseas contribuir:
-
-1. Haz un fork del repositorio.
-2. Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
-3. Realiza tus cambios y realiza un commit (`git commit -m 'Añadida nueva funcionalidad'`).
-4. Haz push a tu rama (`git push origin feature/nueva-funcionalidad`).
-5. Abre un Pull Request.
-
----
-
-## **Licencia**
-
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+- **jsonwebtoken**: Generación de tokens JWT.
+- **cookie-parser**: Parseo de cookies.
 
 ---
 
@@ -138,11 +128,3 @@ Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para má
 
 - Autor: Mauricio Moraga
 - Email: [mmmorag.m3@gmail.com](mailto:mmmorag.m3@gmail.com)
-
-## **Screenshots**
-
-![GET](./screenshots/get.png)
-
-![POST](./screenshots/post.png)
-
-![PUT](./screenshots/put.png)
